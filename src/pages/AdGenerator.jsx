@@ -190,7 +190,7 @@ const AdGenerator = () => {
         <div className="adg-select-group">
           <label>Business</label>
           <div className="adg-select-wrap">
-            <select value={selectedBizId} onChange={e => { setSelectedBizId(e.target.value); setSelectedCampId(''); }}>
+            <select value={selectedBizId} onChange={e => switchBusiness(e.target.value)}>
               {SAMPLE_DATA.businesses.map(b => (
                 <option key={b.id} value={b.id}>{b.name}</option>
               ))}
@@ -210,9 +210,22 @@ const AdGenerator = () => {
             </div>
           </div>
         )}
-        <Button variant="ghost" size="sm" onClick={() => { setHeadlines(['','','','','']); setDescriptions(['','']); }}>
-          <RotateCcw size={14} /> Reset
-        </Button>
+        <div className="adg-controls-right">
+          <button
+            type="button"
+            className={`adg-ai-btn ${isGenerating ? 'adg-ai-btn--loading' : ''}`}
+            onClick={regenerateAll}
+            disabled={isGenerating}
+          >
+            {isGenerating
+              ? <><span className="adg-spinner" /> Generating...</>
+              : <><Sparkles size={15} /> Generate with AI</>
+            }
+          </button>
+          <button type="button" className="adg-reset-btn" onClick={() => { setHeadlines(['','','','','']); setDescriptions(['','']); }}>
+            <RotateCcw size={14} />
+          </button>
+        </div>
       </div>
 
       <div className="adg-layout">
@@ -379,6 +392,22 @@ const AdGenerator = () => {
         .adg-ctrl-btn { display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.8125rem; font-weight: 600; border-radius: 6px; color: var(--text-secondary); transition: var(--transition-fast); }
         .adg-ctrl-btn.active { background: var(--bg-primary); color: var(--brand); box-shadow: var(--shadow-sm); }
         .adg-preview-wrap.mobile { max-width: 340px; }
+
+        .adg-controls-right { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+        .adg-ai-btn {
+          display: flex; align-items: center; gap: 0.625rem; padding: 0.625rem 1.25rem;
+          background: linear-gradient(135deg, var(--brand) 0%, #7c3aed 100%); color: white;
+          border-radius: var(--radius-md); font-size: 0.9375rem; font-weight: 700;
+          cursor: pointer; border: none; transition: all 0.2s ease;
+          box-shadow: 0 2px 10px rgba(99,102,241,0.35);
+        }
+        .adg-ai-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(99,102,241,0.45); }
+        .adg-ai-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .adg-ai-btn--loading { background: var(--bg-secondary); color: var(--text-secondary); box-shadow: none; }
+        .adg-reset-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-tertiary); cursor: pointer; transition: var(--transition-fast); }
+        .adg-reset-btn:hover { border-color: var(--error); color: var(--error); background: #fff1f2; }
+        .adg-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(99,102,241,0.3); border-top-color: var(--brand); border-radius: 50%; animation: adgSpin 0.7s linear infinite; }
+        @keyframes adgSpin { to { transform: rotate(360deg); } }
 
         @media (max-width: 1200px) { .adg-layout { grid-template-columns: 1fr; } .adg-sidebar-sticky { position: static; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
